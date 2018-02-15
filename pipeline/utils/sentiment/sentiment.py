@@ -1,4 +1,4 @@
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 
 from sklearn.model_selection import cross_validate
 
@@ -21,6 +21,7 @@ def read(path, tag):
 
 def test(corpus):	
 
+	random.seed(42)
 	random.shuffle(corpus)
 
 	tweets, labels = zip(*corpus)
@@ -48,16 +49,41 @@ def train(corpus):
 	X = vectorizer.fit_transform(tweets)
 
 	clf = LogisticRegression()
+	#clf = SGDClassifier()
+	#clf = svm.LinearSVM()
 
 	clf.fit(X, labels)
 
-	return clf
+	return TweetClf(clf, vectorizer)
 
+class TweetClf:
+	
+	def __init__(self, clf, vectorizer):
+		self.classifier = clf
+		self.vectorizer = vectorizer
+		
+	@property	
+	def clf(self):
+		return self.classifier
+		
+	def vectorize(self, tweets):
+		return self.vectorizer.transform(tweets)
+		
+	def predict(self, tweets):
+	
+		X = self.vectorize(tweets)
+		
+		return self.clf.predict(X)
+	
 if __name__ == "__main__":
 	pos = "positive.txt"
 	neg = "negative.txt"
 
 	corpus = read(pos, "pos") + read(neg, "neg")
 	
-	test(corpus)
+	#test(corpus)
+	
+	t = train(corpus)
+	
+	print(t.predict(["This is not a good tweet :)"]))
 
