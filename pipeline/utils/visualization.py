@@ -10,8 +10,12 @@ import matplotlib.pyplot as plt
 y,x = -87.94011,41.64454
 Y,X = -87.52413,42.02303
 coors_ll = {'low_left_x' : x, 'low_left_y' : y, 'up_right_x' : X, 'up_right_y' : Y}
+
+#shapefile with neighborhood boundaries.
 shapeFile = 'pipeline/utils/geo_export_0d18d288-fb07-4743-8d14-780bc1108034.shp'
-# shapeFile = 'pipeline/utils/geo_export_0d18d288-fb07-4743-8d14-780bc1108034.shp'
+
+#shapefile with just the city boundary.
+# shapeFile = 'pipeline/utils/geo_export_72bbf21c-442f-41e2-bd40-433d7fb7928d.shp'
 
 
 def getCityBase():
