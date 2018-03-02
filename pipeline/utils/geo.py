@@ -9,7 +9,7 @@ import utm
 
 from utils.consts import CHICAGO_COORDS, GEO_CELL_SIZE, \
     UTM_ZONE_NUMBER, UTM_ZONE_LETTER, \
-    FALSE_LABLE_DATASET_CELL_SIZE
+    FALSE_LABLE_DATASET_CELL_SIZE, LDA_PARAMS
 
 
 def filter_by_geo_coord(df, bounderies):
@@ -118,8 +118,12 @@ def generate_grid_list(bounderies_utm, cell_size):
 
 def latlng2LDA_topics_chicago(latitude, longitude, doc_topics, docs):
     latitude_index, longitude_index = latlng2grid_cords_chicago(latitude, longitude)
-    doc_index = docs.index.get_loc((latitude_index, longitude_index))
-    return doc_topics[doc_index]
+    if (latitude_index, longitude_index) in docs.index:
+        doc_index = docs.index.get_loc((latitude_index, longitude_index))
+        return doc_topics[doc_index]
+    else:
+        #raise KeyError
+        return np.zeros(LDA_PARAMS['n_components'])
 
 
 CHICAGO_UTM_COORDS = bounderis_latlng2utm(CHICAGO_COORDS)
