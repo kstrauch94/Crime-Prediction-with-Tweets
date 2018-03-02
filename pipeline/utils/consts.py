@@ -19,11 +19,13 @@ UTM_ZONE_LETTER = 'T'
 
 LDA_PARAMS = {
     'n_components': 500,
-    'max_iter': 10,
-    'learning_method': 'online',
-    'learning_offset': 50.,
-    'random_state': 42,
-    'verbose': 1
+    'verbose': 1,
+    # 'max_iter': 10,
+    # 'learning_method': 'online',
+    # 'learning_offset': 50.,
+    # 'random_state': 42,
 }
 
 LDA_TOPICS = ['T{:03}'.format(i) for i in range(LDA_PARAMS['n_components'])]
+
+CSV_DATE_FORMART = "%Y-%m-%d %H:%M:%S"
