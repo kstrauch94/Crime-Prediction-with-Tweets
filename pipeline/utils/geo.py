@@ -83,13 +83,13 @@ def enrich_with_grid_coords(df, bounderies, cell_size):
 
     utm_coords = df[['latitude', 'longitude']].apply(lambda row: _generate_utm_columns(row), axis=1)
 
-    df['latitude_index'] = (((utm_coords['latitude'] - bounderies_utm_cords['ll']['latitude'])
-                             / cell_size)
-                            .astype(int))
+    df.loc[:, 'latitude_index'] = (((utm_coords['latitude'] - bounderies_utm_cords['ll']['latitude'])
+                                    / cell_size)
+                                   .astype(int))
 
-    df['longitude_index'] = (((utm_coords['longitude'] - bounderies_utm_cords['ll']['longitude'])
-                              / cell_size)
-                             .astype(int))
+    df.loc[:, 'longitude_index'] = (((utm_coords['longitude'] - bounderies_utm_cords['ll']['longitude'])
+                                     / cell_size)
+                                    .astype(int))
 
     # df['cell_index'] = df['longitude_index'] * n_latitude_cells + df['latitude_index']
 
