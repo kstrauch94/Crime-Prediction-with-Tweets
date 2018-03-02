@@ -21,7 +21,7 @@ LDA_PARAMS = {
     'n_components': 500,
     'verbose': 1,
     # 'max_iter': 10,
-    # 'learning_method': 'online',
+    'learning_method': 'batch',
     # 'learning_offset': 50.,
     # 'random_state': 42,
 }
