@@ -19,7 +19,7 @@ UTM_ZONE_LETTER = 'T'
 
 LDA_PARAMS = {
     'n_components': 500,
-    'verbose': 1,
+    'verbose': 0,
     # 'max_iter': 10,
     'learning_method': 'batch',
     # 'learning_offset': 50.,
