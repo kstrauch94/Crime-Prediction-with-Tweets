@@ -146,3 +146,5 @@ latlng2grid_cords_chicago = functools.partial(latlng2grid_cords,
 generate_chicago_threat_grid_list = functools.partial(generate_grid_list,
                                                       bounderies_utm=CHICAGO_UTM_COORDS,
                                                       cell_size=FALSE_LABLE_DATASET_CELL_SIZE)
+
+N_CHICAGO_THREAT_GRID_LIST = len(generate_chicago_threat_grid_list())
