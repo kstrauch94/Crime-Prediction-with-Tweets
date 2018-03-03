@@ -39,7 +39,7 @@ from twokenize3 import tokenizeRawTweetText
 
 sent_directory = os.getcwd() + "/" + "sentiment"
 sys.path.insert(0, sent_directory)
-from sentiment import sentiment_of_document,find_sentiment_doc,find_sentiment_tweet
+from sentiment import sentiment_of_document,find_sentiment_doc,calculate_sentiment_tweet
 
 
 # Geospatial Grid
@@ -127,7 +127,7 @@ def process_dataframe(dataset,offset,coors,xGrid):
     myDic1,myDic2 = ({} for i in range(2))
     tweetList = []
     dataset = c2v(dataset,offset,coors,xGrid)
-    dataset["sentiment_text"] = dataset["text"].apply(find_sentiment_tweet)
+    dataset["sentiment_text"] = dataset["text"].apply(calculate_sentiment_tweet)
     dataset["twokenized_text"] = dataset["text"].apply(tokenizeRawTweetText)
     dataset.dropna(inplace=True)
     dataset.sort_values(['Grid Number'],inplace=True)
