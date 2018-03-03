@@ -1,14 +1,17 @@
+import os
 import functools
 import itertools
 
 import numpy as np
-
 import pandas as pd
 import utm
 
 from utils.consts import CHICAGO_COORDS, DOCS_GEO_CELL_SIZE, \
     UTM_ZONE_NUMBER, UTM_ZONE_LETTER, \
     FALSE_LABLE_DATASET_CELL_SIZE, LDA_PARAMS
+
+
+CHICAGO_SHAPEFILE_PATH = os.path.join(os.path.dirname(__file__), 'blalbashapefile')
 
 
 def filter_by_geo_coord(df, bounderies):
@@ -105,14 +108,18 @@ def generate_grid_list(bounderies_utm, cell_size):
                                   bounderies_utm['ur']['longitude'],
                                   cell_size)
 
-    utm_grid_list = [{'latitude': lat,
-                      'longitude': lng}
-                     for lat, lng in itertools.product(utm_latitude_dim,
-                                                       utm_longitude_dim)]
+    grid_list = []
+    for (lat_ind, lat), (lng_ind, lng) in itertools.product(enumerate(utm_latitude_dim),
+                                                            enumerate(utm_longitude_dim)):
 
-    grid_list = pd.DataFrame([_utm2latlng(cord) for cord in utm_grid_list])
+        grid_cord = _utm2latlng({'latitude': lat, 'longitude': lng})
+        grid_cord['latitude_index'] = lat_ind
+        grid_cord['longitude_index'] = lng_ind
 
-    return grid_list
+        grid_list.append(grid_cord)
+
+    return pd.DataFrame(grid_list)
+
 
 def utm_city_boundary(shapefile):
     """
@@ -120,18 +127,18 @@ def utm_city_boundary(shapefile):
     """
     chicago = shapefile.shapeRecords()[0].shape.points
     chicago_utm = []
-    for i in range(0,len(chicago)):
-        chicago_utm.append(utm.from_latlon(chicago[i][1],chicago[i][0])[0:2])
+    for i in range(0, len(chicago)):
+        chicago_utm.append(utm.from_latlon(chicago[i][1], chicago[i][0])[0:2])
     return chicago_utm
 
 
 def generate_grid(coors, distance_offset):
-    """ 
+    """
     Getting the grids of 1000 meters square.
-        
-    parameters: minx, miny, maxx, maxy 
-        
-    returns: grid of the 
+
+    parameters: minx, miny, maxx, maxy
+
+    returns: grid of the
     """
     dx = distance_offset
     dy = distance_offset
@@ -144,40 +151,56 @@ def generate_grid(coors, distance_offset):
     for i in range(ny):
         for j in range(nx):
             vertices = []
-            vertices.append([coors['low_left_x']+dx*j,coors['low_left_y']+dy*i])
-            vertices.append([coors['low_left_x']+dx*(j+1),coors['low_left_y']+dy*i])
-            vertices.append([coors['low_left_x']+dx*(j+1),coors['low_left_y']+dy*(i+1)])
-            vertices.append([coors['low_left_x']+dx*j,coors['low_left_y']+dy*(i+1)])
+            vertices.append([coors['low_left_x']+dx*j, coors['low_left_y']+dy*i])
+            vertices.append([coors['low_left_x']+dx*(j+1), coors['low_left_y']+dy*i])
+            vertices.append([coors['low_left_x']+dx*(j+1), coors['low_left_y']+dy*(i+1)])
+            vertices.append([coors['low_left_x']+dx*j, coors['low_left_y']+dy*(i+1)])
             grid.append(vertices)
-            lat_long_index.append([i,j])            
+            lat_long_index.append([i, j])
     return grid, lat_long_index
 
+
 def get_in_city_grid(coors, offset, shapefile):
-    """ 
-    
+    """
+
     """
     green_grid = []
-    
-    grids,ll_index = generate_grid(coors, offset)
-    
+
+    grids, ll_index = generate_grid(coors, offset)
+
     chicago_utm = utm_city_boundary(shapefile)
-    
+
     poly = Polygon(chicago_utm)
-    for i in range(0,len(grids)):
+    for i in range(0, len(grids)):
         for g in grids[i]:
             if(poly.contains(Point(g))):
                 green_grid.append({'lat_ind': ll_index[i][0], 'lng_ind': ll_index[i][1]})
-    
+
     return pd.DataFrame(green_grid).drop_duplicates()
 
+
 def latlng2LDA_topics_chicago(latitude, longitude, doc_topics, docs):
-    latitude_index, longitude_index = latlng2grid_cords_chicago(latitude, longitude)
+    latitude_index, longitude_index = latlng2grid_docs_cords_chicago(latitude, longitude)
+
     if (latitude_index, longitude_index) in docs.index:
         doc_index = docs.index.get_loc((latitude_index, longitude_index))
         return doc_topics[doc_index]
     else:
         #raise KeyError
         return np.zeros(LDA_PARAMS['n_components'])
+
+
+def latlng2LDA_sentment_chicago(latitude, longitude, average_sentiment_docs):
+    latitude_index, longitude_index = latlng2grid_docs_cords_chicago(latitude,
+                                                                     longitude)
+
+    if (latitude_index, longitude_index) in average_sentiment_docs.index:
+        doc_index = average_sentiment_docs.index.get_loc((latitude_index,
+                                                          longitude_index))
+        return average_sentiment_docs[doc_index]
+    else:
+        #raise KeyError
+        return 0.
 
 
 CHICAGO_UTM_COORDS = bounderis_latlng2utm(CHICAGO_COORDS)
