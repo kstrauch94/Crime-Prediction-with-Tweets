@@ -102,6 +102,7 @@ def enrich_with_grid_coords(df, bounderies, cell_size):
     return df
 
 
+'''
 def generate_grid_list(bounderies_utm, cell_size):
 
     utm_latitude_dim = np.arange(bounderies_utm['ll']['latitude'],
@@ -123,6 +124,7 @@ def generate_grid_list(bounderies_utm, cell_size):
         grid_list.append(grid_cord)
 
     return pd.DataFrame(grid_list)
+'''
 
 
 def utm_city_boundary():
@@ -130,14 +132,14 @@ def utm_city_boundary():
     Accepts only BOUNDARY SHAPEFILES!!
     """
     shpfile = shp.Reader(CHICAGO_BOUNDARY)
-    chicago = shpfile.shapeRecords()[0].shape.points
+    chicago = s.shapeRecords()[0].shape.points
     chicago_utm = []
     for i in range(0, len(chicago)):
         chicago_utm.append(utm.from_latlon(chicago[i][1], chicago[i][0])[0:2])
     return chicago_utm
 
 
-def generate_grid(distance_offset):
+def generate_grid(distance_cell_size):
     """
     Getting the grids of 1000 meters square.
 
@@ -145,38 +147,38 @@ def generate_grid(distance_offset):
 
     returns: grid of the
     """
-    dx = distance_offset
-    dy = distance_offset
+    dx = distance_cell_size
+    dy = distance_cell_size
 
-    
-    nx = int(math.ceil(abs(CHICAGO_UTM_COORDS['ur']['latitude'] - CHICAGO_UTM_COORDS['ll']['latitude'])/dx))
-    ny = int(math.ceil(abs(CHICAGO_UTM_COORDS['ur']['longitude'] - CHICAGO_UTM_COORDS['ll']['longitude'])/dy))
+    nx = int(
+        math.ceil(abs(CHICAGO_UTM_COORDS['ur']['latitude'] - CHICAGO_UTM_COORDS['ll']['latitude'])/dx))
+    ny = int(
+        math.ceil(abs(CHICAGO_UTM_COORDS['ur']['longitude'] - CHICAGO_UTM_COORDS['ll']['longitude'])/dy))
     grid = []
     lat_long_index = []
 
     for i in range(ny):
         for j in range(nx):
             vertices = []
-            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*j, CHICAGO_UTM_COORDS['ll']['longitude']+dy*i])
-            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*(j+1), CHICAGO_UTM_COORDS['ll']['longitude']+dy*i])
-            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*(j+1), CHICAGO_UTM_COORDS['ll']['longitude']+dy*(i+1)])
-            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*j, CHICAGO_UTM_COORDS['ll']['longitude']+dy*(i+1)])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*j,
+                             CHICAGO_UTM_COORDS['ll']['longitude']+dy*i])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*(j+1),
+                             CHICAGO_UTM_COORDS['ll']['longitude']+dy*i])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*(j+1),
+                             CHICAGO_UTM_COORDS['ll']['longitude']+dy*(i+1)])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*j,
+                             CHICAGO_UTM_COORDS['ll']['longitude']+dy*(i+1)])
             grid.append(vertices)
             lat_long_index.append([i, j])
     return grid, lat_long_index
 
 
-<<<<<<< HEAD
-def get_in_city_grid(offset):
-=======
-def get_in_city_grid(coors, offset):
->>>>>>> 73303c920b3d2ee00019e5b37c028668c6be75dd
+def generate_grid_list(cell_size):
     """
 
     """
     green_grid = []
-
-    grids, ll_index = generate_grid(offset)
+    grids, ll_index = generate_grid(cell_size)
 
     chicago_utm = utm_city_boundary()
 
@@ -200,16 +202,14 @@ def latlng2LDA_topics_chicago(latitude, longitude, doc_topics, docs):
         return np.zeros(LDA_PARAMS['n_components'])
 
 
-def latlng2LDA_sentment_chicago(latitude, longitude, average_sentiment_docs):
+def latlng2LDA_sentiment_chicago(latitude, longitude, average_sentiment_docs):
     latitude_index, longitude_index = latlng2grid_docs_cords_chicago(latitude,
                                                                      longitude)
 
     if (latitude_index, longitude_index) in average_sentiment_docs.index:
-        doc_index = average_sentiment_docs.index.get_loc((latitude_index,
-                                                          longitude_index))
-        return average_sentiment_docs[doc_index]
+        return average_sentiment_docs[(latitude_index, longitude_index)]
     else:
-        #raise KeyError
+        # raise KeyError
         return 0.
 
 
@@ -231,7 +231,7 @@ latlng2grid_docs_cords_chicago = functools.partial(latlng2grid_cords,
                                                    cell_size=DOCS_GEO_CELL_SIZE)
 
 generate_chicago_threat_grid_list = functools.partial(generate_grid_list,
-                                                      bounderies_utm=CHICAGO_UTM_COORDS,
+                                                      # bounderies_utm=CHICAGO_UTM_COORDS,
                                                       cell_size=FALSE_LABLE_DATASET_CELL_SIZE)
 
 N_CHICAGO_THREAT_GRID_LIST = len(generate_chicago_threat_grid_list())
