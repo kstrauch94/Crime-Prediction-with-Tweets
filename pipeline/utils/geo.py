@@ -5,10 +5,11 @@ import itertools
 import numpy as np
 import pandas as pd
 import utm
+import shapefile as shp
 
 from utils.consts import CHICAGO_COORDS, DOCS_GEO_CELL_SIZE, \
     UTM_ZONE_NUMBER, UTM_ZONE_LETTER, \
-    FALSE_LABLE_DATASET_CELL_SIZE, LDA_PARAMS
+    FALSE_LABLE_DATASET_CELL_SIZE, LDA_PARAMS, CHICAGO_BOUNDARY
 
 
 CHICAGO_SHAPEFILE_PATH = os.path.join(os.path.dirname(__file__), 'blalbashapefile')
@@ -121,11 +122,12 @@ def generate_grid_list(bounderies_utm, cell_size):
     return pd.DataFrame(grid_list)
 
 
-def utm_city_boundary(shapefile):
+def utm_city_boundary(CHICAGO_BOUNDARY):
     """
     Accepts only BOUNDARY SHAPEFILES!!
     """
-    chicago = shapefile.shapeRecords()[0].shape.points
+    shpfile = shp.Reader(CHICAGO_BOUNDARY)
+    chicago = shpfile.shapeRecords()[0].shape.points
     chicago_utm = []
     for i in range(0, len(chicago)):
         chicago_utm.append(utm.from_latlon(chicago[i][1], chicago[i][0])[0:2])
