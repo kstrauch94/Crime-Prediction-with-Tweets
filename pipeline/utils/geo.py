@@ -1,11 +1,14 @@
 import os
 import functools
+import math
 import itertools
 
 import numpy as np
 import pandas as pd
 import utm
 import shapefile as shp
+from shapely.geometry import Point, Polygon
+
 
 from utils.consts import CHICAGO_COORDS, DOCS_GEO_CELL_SIZE, \
     UTM_ZONE_NUMBER, UTM_ZONE_LETTER, \
@@ -122,7 +125,7 @@ def generate_grid_list(bounderies_utm, cell_size):
     return pd.DataFrame(grid_list)
 
 
-def utm_city_boundary(CHICAGO_BOUNDARY):
+def utm_city_boundary():
     """
     Accepts only BOUNDARY SHAPEFILES!!
     """
@@ -134,7 +137,7 @@ def utm_city_boundary(CHICAGO_BOUNDARY):
     return chicago_utm
 
 
-def generate_grid(coors, distance_offset):
+def generate_grid(distance_offset):
     """
     Getting the grids of 1000 meters square.
 
@@ -145,32 +148,33 @@ def generate_grid(coors, distance_offset):
     dx = distance_offset
     dy = distance_offset
 
-    nx = int(math.ceil(abs(coors['up_right_x'] - coors['low_left_x'])/dx))
-    ny = int(math.ceil(abs(coors['up_right_y'] - coors['low_left_y'])/dy))
+    
+    nx = int(math.ceil(abs(CHICAGO_UTM_COORDS['ur']['latitude'] - CHICAGO_UTM_COORDS['ll']['latitude'])/dx))
+    ny = int(math.ceil(abs(CHICAGO_UTM_COORDS['ur']['longitude'] - CHICAGO_UTM_COORDS['ll']['longitude'])/dy))
     grid = []
     lat_long_index = []
 
     for i in range(ny):
         for j in range(nx):
             vertices = []
-            vertices.append([coors['low_left_x']+dx*j, coors['low_left_y']+dy*i])
-            vertices.append([coors['low_left_x']+dx*(j+1), coors['low_left_y']+dy*i])
-            vertices.append([coors['low_left_x']+dx*(j+1), coors['low_left_y']+dy*(i+1)])
-            vertices.append([coors['low_left_x']+dx*j, coors['low_left_y']+dy*(i+1)])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*j, CHICAGO_UTM_COORDS['ll']['longitude']+dy*i])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*(j+1), CHICAGO_UTM_COORDS['ll']['longitude']+dy*i])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*(j+1), CHICAGO_UTM_COORDS['ll']['longitude']+dy*(i+1)])
+            vertices.append([CHICAGO_UTM_COORDS['ll']['latitude']+dx*j, CHICAGO_UTM_COORDS['ll']['longitude']+dy*(i+1)])
             grid.append(vertices)
             lat_long_index.append([i, j])
     return grid, lat_long_index
 
 
-def get_in_city_grid(coors, offset, shapefile):
+def get_in_city_grid(offset):
     """
 
     """
     green_grid = []
 
-    grids, ll_index = generate_grid(coors, offset)
+    grids, ll_index = generate_grid(offset)
 
-    chicago_utm = utm_city_boundary(shapefile)
+    chicago_utm = utm_city_boundary()
 
     poly = Polygon(chicago_utm)
     for i in range(0, len(grids)):
