@@ -24,6 +24,12 @@ unigram_lexicon = current_directory + "/" + "unigrams-pmilexicon.txt"
 
 
 def read(path, tag):
+    """
+    Input :
+        Path of the file along with the sentiment to be tagged
+    Output :
+        A list of tagged tweets.
+    """
     with open(path, "r") as f:
         tweets = f.readlines()
     tweet_tag = [[tweet, tag] for tweet in tweets]
@@ -31,6 +37,12 @@ def read(path, tag):
 
 
 def test(corpus):
+    """
+    Input : 
+        Corpus with tagged positive and negative tweets.
+    Output :
+        Test the passed corpus against the logistic regression classifiers
+        """
     random.seed(42)
     random.shuffle(corpus)
     tweets, labels = zip(*corpus)
@@ -42,10 +54,16 @@ def test(corpus):
                "precision_macro", "recall_micro", "recall_macro"]
     f1_scores = cross_validate(clf, X, labels, cv=10, scoring=scoring, return_train_score=False)
     for score_name, scores in f1_scores.items():
-        print("average {} : {}\n".format(score_name, sum(scores)/len(scores)))
+        print("average {} : {}".format(score_name, sum(scores)/len(scores)))
 
 
 def train(corpus):
+    """
+    Input : 
+        Corpus with tagged positive and negative tweets.
+    Output :
+        Train the passed corpus against the logistic regression classifiers
+        """
     random.shuffle(corpus)
     tweets, labels = zip(*corpus)
     vectorizer = build_pipeline_steps(do_bigram_sent=True, do_unigram_sent=True,
@@ -57,7 +75,9 @@ def train(corpus):
 
 
 class TweetClf:
-
+    """
+    The following class vectorizes the tweets and return sentiment and confidence values for a single tweet/document of tweets.
+    """
     def __init__(self, clf, vectorizer):
         self.classifier = clf
         self.vectorizer = vectorizer
@@ -85,8 +105,6 @@ class TweetClf:
             pos_score += pos
         return (pos_score - neg_score) / len(probs)
 
-# For finding the sentiment of individual tweets
-
 
 def calculate_sentiment_tweet(tweets):
     """input :
@@ -100,5 +118,7 @@ def calculate_sentiment_tweet(tweets):
 pos = current_directory + "/" + "positive.txt"
 neg = current_directory + "/" + "negative.txt"
 corpus = read(pos, 1) + read(neg, -1)
+print("Length of the testing Corpus :",len(corpus))
+print("Adding unigrams and bigrams sentiment scores \n")
 testing = test(corpus)
 data = train(corpus)
