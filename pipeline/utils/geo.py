@@ -122,7 +122,7 @@ def generate_grid_list(bounderies_utm, cell_size):
     return pd.DataFrame(grid_list)
 
 
-def utm_city_boundary(CHICAGO_BOUNDARY):
+def utm_city_boundary():
     """
     Accepts only BOUNDARY SHAPEFILES!!
     """
@@ -162,7 +162,7 @@ def generate_grid(coors, distance_offset):
     return grid, lat_long_index
 
 
-def get_in_city_grid(coors, offset, shapefile):
+def get_in_city_grid(coors, offset):
     """
 
     """
@@ -170,7 +170,7 @@ def get_in_city_grid(coors, offset, shapefile):
 
     grids, ll_index = generate_grid(coors, offset)
 
-    chicago_utm = utm_city_boundary(shapefile)
+    chicago_utm = utm_city_boundary()
 
     poly = Polygon(chicago_utm)
     for i in range(0, len(grids)):
