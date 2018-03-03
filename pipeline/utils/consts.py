@@ -13,6 +13,7 @@ N_LATITUDE_CELLS = 35
 N_LONGITUDE_CELLS = 42
 
 KDE_BANDWITH = 0.00017
+KDE_LEVELS = 40
 
 UTM_ZONE_NUMBER = 16
 UTM_ZONE_LETTER = 'T'
@@ -29,3 +30,21 @@ LDA_PARAMS = {
 LDA_TOPICS = ['T{:03}'.format(i) for i in range(LDA_PARAMS['n_components'])]
 
 CSV_DATE_FORMART = "%Y-%m-%d %H:%M:%S"
+
+# shapefile with neighborhood boundaries.
+CHICAGO_NEIGHBORHOOD = 'geo_export_0d18d288-fb07-4743-8d14-780bc1108034.shp'
+
+# shapefile with just the city boundary.
+CHICAGO_BOUNDARY = 'pipeline/utils/geo_export_72bbf21c-442f-41e2-bd40-433d7fb7928d.shp'
+
+
+# Visualization Constants
+FIGURE_SIZE = (13,15)
+
+SCATTER_SIZE_OF_CHICAGO_CITY = 0.75
+SCATTER_SIZE_OF_CRIME_POINTS = 1.5
+
+CITY_MAP_ORDER = 2
+
+CITY_MAP_COLOR = 'Black'
+CONTOUR_PLOT_COLOUR = 'Reds'
