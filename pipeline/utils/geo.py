@@ -166,7 +166,11 @@ def generate_grid(distance_offset):
     return grid, lat_long_index
 
 
+<<<<<<< HEAD
 def get_in_city_grid(offset):
+=======
+def get_in_city_grid(coors, offset):
+>>>>>>> 73303c920b3d2ee00019e5b37c028668c6be75dd
     """
 
     """
