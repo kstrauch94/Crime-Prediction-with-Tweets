@@ -132,7 +132,7 @@ def utm_city_boundary():
     Accepts only BOUNDARY SHAPEFILES!!
     """
     shpfile = shp.Reader(CHICAGO_BOUNDARY)
-    chicago = s.shapeRecords()[0].shape.points
+    chicago = shpfile.shapeRecords()[0].shape.points
     chicago_utm = []
     for i in range(0, len(chicago)):
         chicago_utm.append(utm.from_latlon(chicago[i][1], chicago[i][0])[0:2])
@@ -213,6 +213,13 @@ def latlng2LDA_sentiment_chicago(latitude, longitude, average_sentiment_docs):
         return 0.
 
 
+def generate_tweets_docs(tweets_data):
+    tweet_docs_groupby = tweets_data.groupby(('latitude_index', 'longitude_index'))
+    tweet_docs = tweet_docs_groupby['tokens'].apply(lambda r: list(r))
+    tweet_docs = tweet_docs.sort_index()
+    return tweet_docs, tweet_docs_groupby
+
+
 CHICAGO_UTM_COORDS = bounderis_latlng2utm(CHICAGO_COORDS)
 
 enrich_with_chicago_grid_1000 = functools.partial(enrich_with_grid_coords,
@@ -234,4 +241,5 @@ generate_chicago_threat_grid_list = functools.partial(generate_grid_list,
                                                       # bounderies_utm=CHICAGO_UTM_COORDS,
                                                       cell_size=FALSE_LABLE_DATASET_CELL_SIZE)
 
-N_CHICAGO_THREAT_GRID_LIST = len(generate_chicago_threat_grid_list())
+CHICAGO_THREAT_GRID_LIST = generate_chicago_threat_grid_list()
+N_CHICAGO_THREAT_GRID_LIST = len(CHICAGO_THREAT_GRID_LIST)
