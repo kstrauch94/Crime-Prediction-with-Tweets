@@ -114,6 +114,61 @@ def generate_grid_list(bounderies_utm, cell_size):
 
     return grid_list
 
+def utm_city_boundary(shapefile):
+    """
+    Accepts only BOUNDARY SHAPEFILES!!
+    """
+    chicago = shapefile.shapeRecords()[0].shape.points
+    chicago_utm = []
+    for i in range(0,len(chicago)):
+        chicago_utm.append(utm.from_latlon(chicago[i][1],chicago[i][0])[0:2])
+    return chicago_utm
+
+
+def generate_grid(coors, distance_offset):
+    """ 
+    Getting the grids of 1000 meters square.
+        
+    parameters: minx, miny, maxx, maxy 
+        
+    returns: grid of the 
+    """
+    dx = distance_offset
+    dy = distance_offset
+
+    nx = int(math.ceil(abs(coors['up_right_x'] - coors['low_left_x'])/dx))
+    ny = int(math.ceil(abs(coors['up_right_y'] - coors['low_left_y'])/dy))
+    grid = []
+    lat_long_index = []
+
+    for i in range(ny):
+        for j in range(nx):
+            vertices = []
+            vertices.append([coors['low_left_x']+dx*j,coors['low_left_y']+dy*i])
+            vertices.append([coors['low_left_x']+dx*(j+1),coors['low_left_y']+dy*i])
+            vertices.append([coors['low_left_x']+dx*(j+1),coors['low_left_y']+dy*(i+1)])
+            vertices.append([coors['low_left_x']+dx*j,coors['low_left_y']+dy*(i+1)])
+            grid.append(vertices)
+            lat_long_index.append([i,j])            
+    return grid, lat_long_index
+
+def get_in_city_grid(coors, offset, shapefile):
+    """ 
+    
+    """
+    green_grid = []
+    
+    grids,ll_index = generate_grid(coors, offset)
+    
+    chicago_utm = utm_city_boundary(shapefile)
+    
+    poly = Polygon(chicago_utm)
+    for i in range(0,len(grids)):
+        for g in grids[i]:
+            if(poly.contains(Point(g))):
+                green_grid.append({'lat_ind': ll_index[i][0], 'lng_ind': ll_index[i][1]})
+    
+    return pd.DataFrame(green_grid).drop_duplicates()
 
 def latlng2LDA_topics_chicago(latitude, longitude, doc_topics, docs):
     latitude_index, longitude_index = latlng2grid_cords_chicago(latitude, longitude)
