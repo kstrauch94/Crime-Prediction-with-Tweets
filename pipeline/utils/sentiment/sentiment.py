@@ -1,14 +1,26 @@
+"""
+Guidelines :
+
+1) Call sentiment_of_document for finding the sentiment of some particular documents.
+2) The following files work in support with tweet_feature_extractor.py file
+   
+"""
+
+
+
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 
 from sklearn.ensemble import GradientBoostingClassifier
 
 from sklearn.model_selection import cross_validate
 
-import random
+import random,os
 from tweets_feature_extractor import build_pipeline_steps
 
-bigram_lexicon = "bigrams-pmilexicon.txt"
-unigram_lexicon = "unigrams-pmilexicon.txt"
+current_directory = os.path.dirname(__file__)
+
+bigram_lexicon = current_directory + "/" + "bigrams-pmilexicon.txt"
+unigram_lexicon = current_directory + "/" + "unigrams-pmilexicon.txt"
 
 
 def read(path, tag):    
@@ -34,7 +46,7 @@ def test(corpus):
 def train(corpus):
     random.shuffle(corpus)
     tweets, labels = zip(*corpus)
-    vectorizer = build_pipeline_steps(do_bigram_sent=True, do_unigram_sent=True, bigram_sent_file="bigrams-pmilexicon.txt", unigram_sent_file="unigrams-pmilexicon.txt")
+    vectorizer = build_pipeline_steps(do_bigram_sent=True, do_unigram_sent=True, bigram_sent_file=bigram_lexicon, unigram_sent_file=unigram_lexicon)
     X = vectorizer.fit_transform(tweets)
     clf = LogisticRegression()
     clf.fit(X, labels)
@@ -69,19 +81,37 @@ class TweetClf:
             pos_score += pos
         return (pos_score - neg_score) / len(probs)
 
-
-def findSentimentTweet(tweets):
+# For finding the sentiment of individual tweets
+def find_sentiment_tweet(tweets):
+    """input :
+        pandas dataseries"""
     #return data.predict_proba([tweets])
     return data.score_document([tweets])
 
-def findSentimentDoc(list_Sentence):
+# For finding the sentiment of all the documents in all the grids
+def find_sentiment_doc(list_Sentence):
+    """input :
+        list of sentences"""
 	#return data.predict_proba(list_Sentence)
-	return data.score_document(list_Sentence)
+    return data.score_document(list_Sentence)
 
-pos = "positive.txt"
-neg = "negative.txt"
+# For finding the sentiment of some particular documents
+def sentiment_of_document(documents):
+    """input :
+        a) List of List of List
+        b) tokenized words""" 
+    sentiment_list,tweets_list,document_list = ([] for i in range(3))
+    for document in documents:
+        for tweets in document:
+            tweets_list.append(" ".join(tweets))
+        document_list.append(tweets_list)
+        sentiment_list.append(findSentimentDoc(document_list[-1]))
+    return sentiment_list
+
+pos = current_directory + "/" + "positive.txt"
+neg = current_directory + "/" + "negative.txt"
 corpus = read(pos, 1) + read(neg, -1)
-#t = test(corpus)
+#testing = test(corpus)
 data = train(corpus)
 	
 
