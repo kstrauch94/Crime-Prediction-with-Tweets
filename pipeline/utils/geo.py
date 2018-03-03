@@ -6,8 +6,7 @@ import numpy as np
 import pandas as pd
 import utm
 
-
-from utils.consts import CHICAGO_COORDS, GEO_CELL_SIZE, \
+from utils.consts import CHICAGO_COORDS, DOCS_GEO_CELL_SIZE, \
     UTM_ZONE_NUMBER, UTM_ZONE_LETTER, \
     FALSE_LABLE_DATASET_CELL_SIZE, LDA_PARAMS
 
@@ -130,7 +129,7 @@ CHICAGO_UTM_COORDS = bounderis_latlng2utm(CHICAGO_COORDS)
 
 enrich_with_chicago_grid_1000 = functools.partial(enrich_with_grid_coords,
                                                   bounderies=CHICAGO_COORDS,
-                                                  cell_size=GEO_CELL_SIZE)
+                                                  cell_size=DOCS_GEO_CELL_SIZE)
 
 enrich_with_chicago_grid_200 = functools.partial(enrich_with_grid_coords,
                                                  bounderies=CHICAGO_COORDS,
@@ -139,9 +138,9 @@ enrich_with_chicago_grid_200 = functools.partial(enrich_with_grid_coords,
 filter_by_chicago_coord = functools.partial(filter_by_geo_coord,
                                             bounderies=CHICAGO_COORDS)
 
-latlng2grid_cords_chicago = functools.partial(latlng2grid_cords,
-                                              bounderies_utm=CHICAGO_UTM_COORDS,
-                                              cell_size=GEO_CELL_SIZE)
+latlng2grid_docs_cords_chicago = functools.partial(latlng2grid_cords,
+                                                   bounderies_utm=CHICAGO_UTM_COORDS,
+                                                   cell_size=DOCS_GEO_CELL_SIZE)
 
 generate_chicago_threat_grid_list = functools.partial(generate_grid_list,
                                                       bounderies_utm=CHICAGO_UTM_COORDS,
