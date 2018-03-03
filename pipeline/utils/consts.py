@@ -1,7 +1,17 @@
+import os
+
+RAW_CRIMES_DATA_PATH = os.path.join('data', 'raw', 'Crimes_-_2001_to_present.csv')
+PROCESSED_CRIMES_DATA_PATH = os.path.join('data', 'processed', 'crime_data.csv')
+
+RAW_TWEETS_DATA_WILDCARD_PATH = ('"' +
+                                 os.path.join('data', 'raw', 'tweets', '*.json') +
+                                 '"')
+PROCESSED_TWEETS_DATA_PATH = os.path.join('data', 'processed', 'tweets_data.csv')
+
 CHICAGO_COORDS = {'ll': {'longitude': -87.94011,
                          'latitude': 41.64454},  # Lower Left Corner
-                  'ur': {'longitude': -87.50413,
-                         'latitude': 42.06303}}  # Upper Right Corner
+                  'ur': {'longitude': -87.52413,
+                         'latitude': 42.02303}}  # Upper Right Corner
 
 START_DATE = '2017-12-08'
 END_DATE = '2018-02-19'
@@ -9,8 +19,7 @@ END_DATE = '2018-02-19'
 CRIME_TYPE = 'THEFT'
 DOCS_GEO_CELL_SIZE = 1000  # meter
 FALSE_LABLE_DATASET_CELL_SIZE = 200
-N_LATITUDE_CELLS = 35
-N_LONGITUDE_CELLS = 42
+
 
 KDE_BANDWITH = 0.0005
 KDE_LEVELS = 40
@@ -19,7 +28,7 @@ UTM_ZONE_NUMBER = 16
 UTM_ZONE_LETTER = 'T'
 
 LDA_PARAMS = {
-    'n_components': 500,
+    'n_components': 250,
     'verbose': 0,
     # 'max_iter': 10,
     'learning_method': 'batch',
@@ -39,7 +48,7 @@ CHICAGO_BOUNDARY = 'data/shapefiles/boundary/geo_export_72bbf21c-442f-41e2-bd40-
 
 
 # Visualization Constants
-FIGURE_SIZE = (13,15)
+FIGURE_SIZE = (13, 15)
 
 SCATTER_SIZE_OF_CHICAGO_CITY = 0.75
 SCATTER_SIZE_OF_CRIME_POINTS = 1.5
