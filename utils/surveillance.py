@@ -72,7 +72,7 @@ def calc_AUCs(agg_surveillance_data, model_names):
 
     for (index1, name1), (index2, name2) in itertools.combinations(
         enumerate(
-            reversed(threat_datasets.keys()),  start=1
+            reversed(model_names),  start=1
         ),
             2):
         auc = (agg_surveillance_data[-index1] - agg_surveillance_data[-index2]
