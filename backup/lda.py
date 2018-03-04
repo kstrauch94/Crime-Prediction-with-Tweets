@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
 
-from consts import LDA_PARAMS
+from utils.consts import LDA_PARAMS
 
 LDA_PARAMS['n_jobs'] = -1
 
