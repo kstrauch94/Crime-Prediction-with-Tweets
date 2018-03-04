@@ -77,7 +77,7 @@ def calc_AUCs(agg_surveillance_data, model_names):
             2):
         auc = (agg_surveillance_data[-index1] - agg_surveillance_data[-index2]
                ).sum() / agg_surveillance_data.shape[1]
-        aucs.loc[name1, name2] = '{:.4f}'.format(auc)
+        aucs.loc[name1, name2] = '{:.6f}'.format(auc)
 
     aucs = aucs.fillna('')
 
