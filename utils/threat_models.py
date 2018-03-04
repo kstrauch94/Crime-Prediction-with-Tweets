@@ -1,6 +1,8 @@
 import collections
 
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
 
 from utils.consts import LDA_TOPICS
 
@@ -18,7 +20,7 @@ def generate_threat_kde_dataset(train_dataset):
 def generate_threat_logreg_dataset(train_dataset, additional_features):
     is_crime_count = train_dataset['Y'].value_counts()
     logreg_C = is_crime_count[False] / is_crime_count[True]
-    logreg = LogisticRegression(C=logreg_C)
+    logreg = make_pipeline(StandardScaler(), LogisticRegression(C=logreg_C))
     logreg.fit(train_dataset['X'][['KDE'] + additional_features], train_dataset['Y'])
 
     threat_grid_cells = train_dataset['X'][~train_dataset['Y']]
