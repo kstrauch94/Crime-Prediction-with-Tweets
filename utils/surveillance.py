@@ -1,4 +1,4 @@
-import itertools
+ORACLEimport itertools
 
 import numpy as np
 import pandas as pd
@@ -11,6 +11,10 @@ from utils.datasets_generation import generate_one_step_datasets
 
 
 def generate_surveillance_data(train_dataset, evaluation_dataset):
+    """
+    Return the surveillance data and threat datasets for a given
+    training & evluation time frame datasets.
+    """
 
     surveillance_data = np.zeros((5, N_CHICAGO_THREAT_GRID_LIST))
 
@@ -19,9 +23,9 @@ def generate_surveillance_data(train_dataset, evaluation_dataset):
     crime_counts = evaluation_dataset.groupby(['latitude_index', 'longitude_index']).size()
     crime_counts = crime_counts.sort_values(ascending=False)
 
-    # real crime occurence is our gold dataset
-    threat_datasets['GOLD'] = {'cells': list(crime_counts.index)}
-    threat_datasets.move_to_end('GOLD')
+    # real crime occurence is our ORACLE dataset
+    threat_datasets['ORACLE'] = {'cells': list(crime_counts.index)}
+    threat_datasets.move_to_end('ORACLE')
 
     for threat_model_index, (threat_model_name, threat_dataset) in enumerate(threat_datasets.items()):
         for cell_index, (latitude_index, longitude_index) in enumerate(threat_dataset['cells']):
@@ -32,6 +36,10 @@ def generate_surveillance_data(train_dataset, evaluation_dataset):
 
 
 def generate_one_step_surveillance_data(crimes_data, tweets_data, start_train_date, n_train_days):
+    """
+    Return the surveillance data and threat datasets for a given
+    training & evluation time frame.
+    """
 
     train_dataset, evaluation_dataset = generate_one_step_datasets(crimes_data,
                                                                    tweets_data,
@@ -45,6 +53,11 @@ def generate_one_step_surveillance_data(crimes_data, tweets_data, start_train_da
 
 
 def generate_all_data_surveillance_data(crimes_data, tweets_data, n_train_days):
+    """
+    Return the aggregated surveillance data and threat datasets for a given
+    training & evluation time frame.
+    """
+
     agg_surveillance_data = np.zeros((5, N_CHICAGO_THREAT_GRID_LIST))
     all_threat_datasets = []
 
@@ -67,6 +80,10 @@ def generate_all_data_surveillance_data(crimes_data, tweets_data, n_train_days):
 
 
 def calc_AUCs(agg_surveillance_data, model_names):
+    """
+    Calculate the Area Under the Curve (AUC) for all the pairs for models.
+    """
+
     model_names_list = list(model_names)
     aucs = pd.DataFrame(columns=model_names_list[:-1], index=model_names_list[1:], dtype=float)
 

@@ -20,6 +20,10 @@ CHICAGO_SHAPEFILE_PATH = os.path.join(os.path.dirname(__file__), 'blalbashapefil
 
 
 def filter_by_geo_coord(df, bounderies):
+    """
+    Filtering Dataframe rows by latitude and longitude.
+    """
+
     return df[(df['latitude'] >= bounderies['ll']['latitude']) &
               (df['latitude'] <= bounderies['ur']['latitude']) &
               (df['longitude'] >= bounderies['ll']['longitude']) &
@@ -104,6 +108,9 @@ def enrich_with_grid_coords(df, bounderies, cell_size):
 
 
 def generate_grid_list(cell_size):
+    """
+    Generate list of all the cells of the grid in the box bounderis of Chicago.
+    """
 
     utm_latitude_dim = np.arange(CHICAGO_UTM_COORDS['ll']['latitude'],
                                  CHICAGO_UTM_COORDS['ur']['latitude'],
@@ -196,6 +203,11 @@ def generate_grid_list2(cell_size):
 
 
 def latlng2LDA_topics_chicago(latitude, longitude, doc_topics, docs):
+    """
+    Return the topic vector in a given latitude and longtitude,
+    by the geo document groupby.
+    """
+
     latitude_index, longitude_index = latlng2grid_docs_cords_chicago(latitude, longitude)
 
     if (latitude_index, longitude_index) in docs.index:
@@ -207,6 +219,11 @@ def latlng2LDA_topics_chicago(latitude, longitude, doc_topics, docs):
 
 
 def latlng2LDA_sentiment_chicago(latitude, longitude, average_sentiment_docs):
+    """
+    Return the sentiment value in a given latitude and longtitude,
+    by the geo document groupby.
+    """
+
     latitude_index, longitude_index = latlng2grid_docs_cords_chicago(latitude,
                                                                      longitude)
 
@@ -215,13 +232,6 @@ def latlng2LDA_sentiment_chicago(latitude, longitude, average_sentiment_docs):
     else:
         # raise KeyError
         return 0.
-
-
-def generate_tweets_docs(tweets_data):
-    tweet_docs_groupby = tweets_data.groupby(('latitude_index', 'longitude_index'))
-    tweet_docs = tweet_docs_groupby['tokens'].apply(lambda r: list(r))
-    tweet_docs = tweet_docs.sort_index()
-    return tweet_docs, tweet_docs_groupby
 
 
 CHICAGO_UTM_COORDS = bounderis_latlng2utm(CHICAGO_COORDS)

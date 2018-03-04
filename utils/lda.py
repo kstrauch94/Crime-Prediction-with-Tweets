@@ -5,9 +5,10 @@ from utils.consts import LDA_PARAMS
 
 
 def coalesce(token):
-    '''
+    """
     Klaues: why this function?
-    '''
+    """
+
     new_tokens = []
     for char in token:
         if len(new_tokens) < 2 or char != new_tokens[-1] or char != new_tokens[-2]:
@@ -16,7 +17,7 @@ def coalesce(token):
 
 
 def preprocess_tweet_for_LDA(raw_tokens):
-    '''
+    """
     text input is one string
     output is tokenized and preprocessed(as defined below) text
 
@@ -24,7 +25,7 @@ def preprocess_tweet_for_LDA(raw_tokens):
     no hashtags or mentions
     any url converted to "url"
     replace multiple repeated chars with 2 of them. eg paaaarty -> paarty
-    '''
+    """
 
     processed_tokens = []
     for token in raw_tokens:
@@ -58,11 +59,20 @@ def train_LDA_model(docs, params=LDA_PARAMS, preprocessor=preprocess_tweet_for_L
 
 
 def get_topic_top_words_LDA(topic_index, lda_model, vocabulary, n_top_words):
+    """
+    Return the top words for given topic.
+    """
+
     topic = lda_model.components_[topic_index]
     return [vocabulary[i] for i in topic.argsort()[:-n_top_words - 1:-1]]
 
 
 def print_top_words_LDA(lda_model, vocabulary, n_top_words, non_trival=True):
+    """
+    Print the top words for each topic.
+    with `non_trivial` set to True, only topics without uniform distribution are shown.
+    """
+
     for topic_index in range(len(lda_model.components_)):
         if not (non_trival and len(set(lda_model.components_[topic_index])) == 1):
 
@@ -72,5 +82,3 @@ def print_top_words_LDA(lda_model, vocabulary, n_top_words, non_trival=True):
             print(message)
 
     print()
-
-# print_top_words_LDA(tweets_lda_model, tweets_vocabulary, 5)

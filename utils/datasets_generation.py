@@ -11,6 +11,10 @@ from utils.consts import LDA_TOPICS
 
 
 def generate_tweets_docs(tweets_data):
+    """
+    Gropby tweets by spatial location into documents.
+    """
+
     tweet_docs_groupby = tweets_data.groupby(('latitude_index', 'longitude_index'))
     tweet_docs = tweet_docs_groupby['tokens'].apply(lambda r: list(r))
     tweet_docs = tweet_docs.sort_index()
@@ -18,11 +22,20 @@ def generate_tweets_docs(tweets_data):
 
 
 def filter_dataset_by_date_window(dataset, start_date, end_date):
+    """
+    Filtering given dataset based on adate window: start --> end.
+    Inclusive in both sides.
+    """
+
     return dataset[(dataset['timestamp'] >= start_date) &
                    ((dataset['timestamp'] <= end_date))]
 
 
 def build_datasets_by_date_window(crimes_data, tweets_data, start_train_date, n_train_days):
+    """
+    Building the training and evaluation datasets given a date window,
+    seperatly for crimes and tweets.
+    """
 
     start_train_date_dt = pd.to_datetime(start_train_date)
     end_train_date_dt = start_train_date_dt + pd.DateOffset(n_train_days)
@@ -44,6 +57,10 @@ def build_datasets_by_date_window(crimes_data, tweets_data, start_train_date, n_
 
 
 def generate_one_step_train_dataset(crimes_dataset, tweets_dataset):
+    """
+    Generating the training dataset with all the features and thier models.
+    """
+
     crimes_kde_model = train_KDE_model(crimes_dataset)
 
     tweets_docs, tweet_docs_groupby = generate_tweets_docs(tweets_dataset)
@@ -96,12 +113,19 @@ def generate_one_step_train_dataset(crimes_dataset, tweets_dataset):
 
 
 def generate_one_step_evaluation_dataset(crimes_evaluation_dataset):
+    """
+    Generating the evaluation dataset (actual crime incidents).
+    """
+
     evaluation_dataset = enrich_with_chicago_grid_200(crimes_evaluation_dataset)
     evaluation_dataset = evaluation_dataset[['latitude_index', 'longitude_index']]
     return evaluation_dataset
 
 
 def generate_one_step_datasets(crimes_data, tweets_data, start_train_date, n_train_days):
+    """
+    Generating training and evaluation datasets for given date frame.
+    """
 
     crimes_train_dataset, tweets_train_dataset, crimes_evaluation_dataset = build_datasets_by_date_window(crimes_data,
                                                                                                           tweets_data,
