@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from utils.geo import N_CHICAGO_THREAT_GRID_LIST, \
-    START_DATE, END_DATE
+from utils.geo import N_CHICAGO_THREAT_GRID_LIST
+from utils.consts import START_DATE, END_DATE
 from utils.threat_models import generate_threat_datasets
 from utils.datasets_generation import generate_one_step_datasets
 
@@ -46,7 +46,7 @@ def generate_all_data_surveillance_data(crimes_data, tweets_data, n_train_days):
     agg_surveillance_data = np.zeros((5, N_CHICAGO_THREAT_GRID_LIST))
     all_threat_datasets = []
 
-    start_train_dates = pd.date_range(START_DATE, END_DATE)[:-(n_train_days+1)][:1]
+    start_train_dates = pd.date_range(START_DATE, END_DATE)[:-(n_train_days+1)]
 
     for start_train_date in tqdm(start_train_dates):
 
@@ -64,5 +64,19 @@ def generate_all_data_surveillance_data(crimes_data, tweets_data, n_train_days):
     return agg_surveillance_data, all_threat_datasets
 
 
-def plot_surveillance_data(surveillance_data):
-    pass
+def calc_AUCs(agg_surveillance_data, model_names):
+    model_names_list = list(threat_datasets.keys())
+    aucs = pd.DataFrame(columns=model_names_list[:-1], index=model_names_list[1:], dtype=float)
+
+    for (index1, name1), (index2, name2) in itertools.combinations(
+        enumerate(
+            reversed(threat_datasets.keys()),  start=1
+        ),
+            2):
+        auc = (agg_surveillance_data[-index1] - agg_surveillance_data[-index2]
+               ).sum() / agg_surveillance_data.shape[1]
+        aucs.loc[name1, name2] = '{:.4f}'.format(auc)
+
+    aucs = aucs.fillna('')
+
+    return aucs

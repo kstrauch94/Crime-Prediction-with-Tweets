@@ -1,6 +1,6 @@
 import os
-import functools
 import math
+import functools
 import itertools
 
 import numpy as np
@@ -12,7 +12,8 @@ from shapely.geometry import Point, Polygon
 
 from utils.consts import CHICAGO_COORDS, DOCS_GEO_CELL_SIZE, \
     UTM_ZONE_NUMBER, UTM_ZONE_LETTER, \
-    FALSE_LABLE_DATASET_CELL_SIZE, LDA_PARAMS, CHICAGO_BOUNDARY
+    FALSE_LABLE_DATASET_CELL_SIZE, LDA_PARAMS, CHICAGO_BOUNDARY, \
+    CHICAGO_GRID_THREAT_PATH, CHICAGO_DOCS_GRID_PATH
 
 
 CHICAGO_SHAPEFILE_PATH = os.path.join(os.path.dirname(__file__), 'blalbashapefile')
@@ -102,15 +103,14 @@ def enrich_with_grid_coords(df, bounderies, cell_size):
     return df
 
 
-'''
-def generate_grid_list(bounderies_utm, cell_size):
+def generate_grid_list(cell_size):
 
-    utm_latitude_dim = np.arange(bounderies_utm['ll']['latitude'],
-                                 bounderies_utm['ur']['latitude'],
+    utm_latitude_dim = np.arange(CHICAGO_UTM_COORDS['ll']['latitude'],
+                                 CHICAGO_UTM_COORDS['ur']['latitude'],
                                  cell_size)
 
-    utm_longitude_dim = np.arange(bounderies_utm['ll']['longitude'],
-                                  bounderies_utm['ur']['longitude'],
+    utm_longitude_dim = np.arange(CHICAGO_UTM_COORDS['ll']['longitude'],
+                                  CHICAGO_UTM_COORDS['ur']['longitude'],
                                   cell_size)
 
     grid_list = []
@@ -124,7 +124,6 @@ def generate_grid_list(bounderies_utm, cell_size):
         grid_list.append(grid_cord)
 
     return pd.DataFrame(grid_list)
-'''
 
 
 def utm_city_boundary():
@@ -173,7 +172,7 @@ def generate_grid(distance_cell_size):
     return grid, lat_long_index
 
 
-def generate_grid_list(cell_size):
+def generate_grid_list2(cell_size):
     """
 
     """
@@ -186,9 +185,14 @@ def generate_grid_list(cell_size):
     for i in range(0, len(grids)):
         for g in grids[i]:
             if(poly.contains(Point(g))):
-                green_grid.append({'lat_ind': ll_index[i][0], 'lng_ind': ll_index[i][1]})
+                cords = _utm2latlng({'latitude': grids[i][0][0],
+                                     'longitude': grids[i][0][1]})
+                cords['latitude_index'] = ll_index[i][0]
+                cords['longitude_index'] = ll_index[i][0]
+                green_grid.append(cords)
+                break
 
-    return pd.DataFrame(green_grid).drop_duplicates()
+    return pd.DataFrame(green_grid)  # .drop_duplicates()
 
 
 def latlng2LDA_topics_chicago(latitude, longitude, doc_topics, docs):
@@ -237,9 +241,29 @@ latlng2grid_docs_cords_chicago = functools.partial(latlng2grid_cords,
                                                    bounderies_utm=CHICAGO_UTM_COORDS,
                                                    cell_size=DOCS_GEO_CELL_SIZE)
 
+generate_chicago_docs_grid_list = functools.partial(generate_grid_list,
+                                                    # bounderies_utm=CHICAGO_UTM_COORDS,
+                                                    cell_size=DOCS_GEO_CELL_SIZE)
+
 generate_chicago_threat_grid_list = functools.partial(generate_grid_list,
                                                       # bounderies_utm=CHICAGO_UTM_COORDS,
                                                       cell_size=FALSE_LABLE_DATASET_CELL_SIZE)
 
-CHICAGO_THREAT_GRID_LIST = generate_chicago_threat_grid_list()
+if not os.path.exists(CHICAGO_GRID_THREAT_PATH):
+    print('Generating threat grid...')
+    CHICAGO_THREAT_GRID_LIST = generate_chicago_threat_grid_list()
+    CHICAGO_THREAT_GRID_LIST.to_pickle(CHICAGO_GRID_THREAT_PATH)
+else:
+    CHICAGO_THREAT_GRID_LIST = pd.read_pickle(CHICAGO_GRID_THREAT_PATH)
+
 N_CHICAGO_THREAT_GRID_LIST = len(CHICAGO_THREAT_GRID_LIST)
+
+
+if not os.path.exists(CHICAGO_DOCS_GRID_PATH):
+    print('Generating docs grid...')
+    CHICAGO_DOCS_GRID_LIST = generate_chicago_docs_grid_list()
+    CHICAGO_DOCS_GRID_LIST.to_pickle(CHICAGO_DOCS_GRID_PATH)
+else:
+    CHICAGO_DOCS_GRID_LIST = pd.read_pickle(CHICAGO_DOCS_GRID_PATH)
+
+N_CHICAGO_DOCS_GRID_LIST = len(CHICAGO_DOCS_GRID_LIST)

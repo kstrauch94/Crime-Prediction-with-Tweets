@@ -62,14 +62,15 @@ def get_topic_top_words_LDA(topic_index, lda_model, vocabulary, n_top_words):
     return [vocabulary[i] for i in topic.argsort()[:-n_top_words - 1:-1]]
 
 
-def print_top_words_LDA(lda_model, vocabulary, n_top_words):
+def print_top_words_LDA(lda_model, vocabulary, n_top_words, non_trival=True):
     for topic_index in range(len(lda_model.components_)):
+        if not (non_trival and len(set(lda_model.components_[topic_index])) == 1):
 
-        message = "Topic #%d: " % topic_index
-        message += " | ".join(get_topic_top_words_LDA(topic_index,
-                                                      lda_model, vocabulary, n_top_words))
+            message = "Topic #%d: " % topic_index
+            message += " | ".join(get_topic_top_words_LDA(topic_index,
+                                                          lda_model, vocabulary, n_top_words))
+            print(message)
 
-        print(message)
     print()
 
 # print_top_words_LDA(tweets_lda_model, tweets_vocabulary, 5)

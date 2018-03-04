@@ -1,3 +1,5 @@
+import collections
+
 from sklearn.linear_model import LogisticRegression
 
 from utils.consts import LDA_TOPICS

@@ -3,7 +3,8 @@ import functools
 import pandas as pd
 
 from utils.geo import latlng2LDA_sentiment_chicago, latlng2LDA_topics_chicago, \
-    enrich_with_chicago_grid_200, generate_chicago_threat_grid_list
+    enrich_with_chicago_grid_200, generate_chicago_threat_grid_list, \
+    CHICAGO_THREAT_GRID_LIST
 from utils.kde import train_KDE_model
 from utils.lda import train_LDA_model
 from utils.consts import LDA_TOPICS
@@ -61,7 +62,7 @@ def generate_one_step_train_dataset(crimes_dataset, tweets_dataset):
                                                         docs=tweets_docs)
 
     train_dataset = pd.concat([enrich_with_chicago_grid_200(crimes_dataset[['latitude', 'longitude']]).assign(crime=True),
-                               generate_chicago_threat_grid_list().assign(crime=False)],
+                               CHICAGO_THREAT_GRID_LIST.assign(crime=False)],
                               axis=0)
 
     train_dataset = train_dataset[['latitude', 'longitude',
@@ -84,7 +85,7 @@ def generate_one_step_train_dataset(crimes_dataset, tweets_dataset):
     features_cols = ['KDE', 'SENTIMENT'] + LDA_TOPICS
 
     train_dataset = {
-        'X': train_dataset[['latitude_index', 'longitude_index'] + features_cols],
+        'X': train_dataset[['latitude', 'longitude', 'latitude_index', 'longitude_index'] + features_cols],
         'Y': train_dataset['crime'],
         'KDE': crimes_kde_model,
         'SENTIMENT': average_sentiment_docs,

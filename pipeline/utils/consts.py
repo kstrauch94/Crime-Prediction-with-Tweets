@@ -28,7 +28,7 @@ UTM_ZONE_NUMBER = 16
 UTM_ZONE_LETTER = 'T'
 
 LDA_PARAMS = {
-    'n_components': 250,
+    'n_components': 350,
     'verbose': 0,
     # 'max_iter': 10,
     'learning_method': 'batch',
@@ -39,6 +39,9 @@ LDA_PARAMS = {
 LDA_TOPICS = ['T{:03}'.format(i) for i in range(LDA_PARAMS['n_components'])]
 
 CSV_DATE_FORMART = "%Y-%m-%d %H:%M:%S"
+
+CHICAGO_GRID_THREAT_PATH = os.path.join('data', 'chicago_grid_200.pickle')
+CHICAGO_DOCS_GRID_PATH = os.path.join('data', 'chicago_grid_1000.pickle')
 
 # shapefile with neighborhood boundaries.
 CHICAGO_NEIGHBORHOOD = 'data/shapefiles/neighborhood/geo_export_0d18d288-fb07-4743-8d14-780bc1108034.shp'
