@@ -65,7 +65,7 @@ def generate_all_data_surveillance_data(crimes_data, tweets_data, n_train_days):
 
 
 def calc_AUCs(agg_surveillance_data, model_names):
-    model_names_list = list(threat_datasets.keys())
+    model_names_list = list(model_names)
     aucs = pd.DataFrame(columns=model_names_list[:-1], index=model_names_list[1:], dtype=float)
 
     for (index1, name1), (index2, name2) in itertools.combinations(
