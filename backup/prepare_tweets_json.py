@@ -33,13 +33,13 @@ def main():
             )
             unified_df.to_csv(unified_file)
 
-            '''
+            """
             header = True
             for tweets_json_path in tqdm(tweets_jsons_paths_block):
                 single_tweets_df = pd.read_json(tweets_json_path)
                 single_tweets_df.to_csv(unified_file, mode='a', header=header)
                 header = False
-           '''
+           """
     
 if __name__ == '__main__':
     main()

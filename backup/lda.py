@@ -15,9 +15,9 @@ LDA_PARAMS['n_jobs'] = -1
 
 
 def coalesce(token):
-    '''
+    """
     Klaues: why this function?
-    '''
+    """
     new_tokens = []
     for char in token:
         if len(new_tokens) < 2 or char != new_tokens[-1] or char != new_tokens[-2]:
@@ -26,7 +26,7 @@ def coalesce(token):
 
 
 def preprocess_tweet_for_LDA(raw_tokens):
-    '''
+    """
     text input is one string
     output is tokenized and preprocessed(as defined below) text
 
@@ -34,7 +34,7 @@ def preprocess_tweet_for_LDA(raw_tokens):
     no hashtags or mentions
     any url converted to "url"
     replace multiple repeated chars with 2 of them. eg paaaarty -> paarty
-    '''
+    """
 
     processed_tokens = []
     for token in raw_tokens:
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     pickle.dump(result, open(result_path, 'wb'))
     print('Done', time.time())
 
-'''
+"""
 import pickle
 
 def train_LDA_model2(docs):
@@ -86,4 +86,4 @@ def train_LDA_model2(docs):
     !python3 ./utils/lda.py ./docs.pickle ./result.pickle
     result = pickle.load(open('./result.pickle', 'rb'))
     return result
-'''
+"""

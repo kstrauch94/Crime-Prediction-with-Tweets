@@ -53,7 +53,7 @@ def main(raw_crimes_data_path, processed_crimes_data_path):
     crimes_data = filter_by_chicago_coord(crimes_data)
     logging.info('#: {}'.format(len(crimes_data)))
 
-    '''
+    """
     crime_types_probs = crimes_data['type']
                         .value_counts(normalize=True, ascending=True)
     crime_types_precents = crime_types_probs * 100
@@ -64,7 +64,7 @@ def main(raw_crimes_data_path, processed_crimes_data_path):
     plt.xlabel('%')
     plt.ylabel('Crime Types')
     plt.xticks(range(0, 30, 5))
-    '''
+    """
 
     logging.info('Filtering by crime type...')
     crimes_data = crimes_data[crimes_data['type'] == CRIME_TYPE]
@@ -74,7 +74,7 @@ def main(raw_crimes_data_path, processed_crimes_data_path):
     crimes_data = crimes_data[['timestamp', 'latitude', 'longitude']]
     logging.info('#: {}'.format(len(crimes_data)))
 
-    '''
+    """
     (pd.Series(np.ones(len(crimes_data)), index=crimes_data['timestamp'])
      .resample('D')
      .sum()
@@ -84,7 +84,7 @@ def main(raw_crimes_data_path, processed_crimes_data_path):
     plt.title('Number of Theft Crime Incidents per Date')
     plt.xlabel('Date')
     plt.ylabel('Number of Theft Crime Incidents')
-    '''
+    """
 
 #    logging.info('Enriching with Chicago grid data...')
 #    crimes_data = enrich_with_chicago_grid_1000(crimes_data)
