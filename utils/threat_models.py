@@ -18,7 +18,7 @@ def generate_threat_kde_dataset(train_dataset):
     threat_kde_df = kde_values.set_index(['latitude_index', 'longitude_index'])['KDE']
     threat_kde_df = threat_kde_df.sort_values(ascending=False)
 
-    return list(threat_kde_df.index)
+    return list(threat_kde_df.index), threat_kde_df
 
 
 def generate_threat_logreg_dataset(train_dataset, additional_features):
@@ -40,7 +40,7 @@ def generate_threat_logreg_dataset(train_dataset, additional_features):
     threat_logreg_df = logreg_values.set_index(['latitude_index', 'longitude_index'])['logreg']
     threat_logreg_df = threat_logreg_df.sort_values(ascending=False)
 
-    return list(threat_logreg_df.index), logreg
+    return list(threat_logreg_df.index), threat_logreg_df, logreg
 
 
 def generate_threat_datasets(train_dataset):
@@ -50,15 +50,17 @@ def generate_threat_datasets(train_dataset):
     """
 
     threat_datasets_list = []
-    threat_datasets_list.append(('KDE', {'cells': generate_threat_kde_dataset(train_dataset)}))
+
+    kde_cells, kde_df = generate_threat_kde_dataset(train_dataset)
+    threat_datasets_list.append(('KDE', {'cells': kde_cells, 'df': kde_df}))
 
     for model_name, additional_features in [('KDE+SENTIMENT', ['SENTIMENT']),
                                             ('KDE+LDA', LDA_TOPICS),
                                             ('KDE+SENTIMENT+LDA', ['SENTIMENT'] + LDA_TOPICS)]:
 
-        cells, logreg = generate_threat_logreg_dataset(train_dataset, additional_features)
+        cells, df, logreg = generate_threat_logreg_dataset(train_dataset, additional_features)
 
-        threat_datasets_list.append((model_name, {'cells': cells, 'logreg': logreg}))
+        threat_datasets_list.append((model_name, {'cells': cells, 'df': df, 'logreg': logreg}))
 
         threat_datasets = collections.OrderedDict(threat_datasets_list)
 
