@@ -8,7 +8,8 @@ from utils.consts import CHICAGO_COORDS, CHICAGO_NEIGHBORHOOD, \
     SCATTER_SIZE_OF_CRIME_POINTS, \
     SCATTER_SIZE_OF_CHICAGO_CITY, CITY_MAP_ORDER,\
     CONTOUR_PLOT_COLOUR, CITY_MAP_COLOR, FIGURE_SIZE,\
-    KDE_LEVELS, CRIME_POINTS_COLOR
+    KDE_LEVELS, CRIME_POINTS_COLOR, CHICAGO_THREAT_GRID_SIZE,\
+    CHICAGO_DOCS_GRID_SIZE
 
 
 def get_city_base(city_map=CHICAGO_NEIGHBORHOOD):
@@ -44,9 +45,9 @@ def plot_contour(kde_model):
     displays the contour plot
     """
     xgrid = np.linspace(CHICAGO_COORDS['ll']['latitude']-0.04,
-                        CHICAGO_COORDS['ur']['latitude'], 200)
+                        CHICAGO_COORDS['ur']['latitude']+0.03, 200)
     ygrid = np.linspace(CHICAGO_COORDS['ll']['longitude']-0.04,
-                        CHICAGO_COORDS['ur']['longitude'], 240)
+                        CHICAGO_COORDS['ur']['longitude']+0.03, 240)
     kde_mesh_x, kde_mesh_y = np.meshgrid(xgrid[::5], ygrid[::5][::-1])
     grid = np.vstack([kde_mesh_x.ravel(), kde_mesh_y.ravel()]).T
     grid *= np.pi/180
@@ -90,6 +91,23 @@ def plot_imshow(data, col_name):
     plt.scatter(city_x, city_y, color=CITY_MAP_COLOR,
                 s=SCATTER_SIZE_OF_CHICAGO_CITY, zorder=CITY_MAP_ORDER)
 
+def plot_imshow2(data, col_name, plot_type):
+    """
+    This plots data with a X and Y axis with a specified column of a aggregated data
+    """
+    fig = plt.figure(figsize=FIGURE_SIZE)
+    new_grid = data[col_name].reset_index()
+    if(plot_type == 'threat'):
+        values = np.zeros(CHICAGO_THREAT_GRID_SIZE)
+    elif(plot_type == 'docs'):
+        values = np.zeros(CHICAGO_DOCS_GRID_SIZE)
+    else:
+        print("Invalid plot grid")
+    for val in new_grid.as_matrix():
+        values[int(val[1])][int(val[0])] = val[2]
+    plt.imshow(values[::-1],
+               cmap=CONTOUR_PLOT_COLOUR)
+    
 
 def plot_log_reg_coef(threat_datasets, model_name, n_dominant_coefs=5):
     coefs = threat_datasets[model_name]['logreg'].steps[1][1].coef_[0]
