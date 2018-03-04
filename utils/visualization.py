@@ -97,8 +97,11 @@ def plot_log_reg_coef(threat_datasets, model_name, n_dominant_coefs=5):
     plt.title(model_name)
     plt.xlabel('coef index')
     plt.ylabel('coef value')
-    print('Most dominant coefs indices:',
-          np.argsort(abs(coefs))[-n_dominant_coefs:][::-1])
+
+    most_dominant_coefs_indices = np.argsort(abs(coefs))[-n_dominant_coefs:][::-1]
+    print('Most dominant coefs indices:', most_dominant_coefs_indices)
+
+    return most_dominant_coefs_indices[0]
 
 
 def plot_surveillance_data(agg_surveillance_data, model_names):
