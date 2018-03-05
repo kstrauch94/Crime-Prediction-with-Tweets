@@ -8,6 +8,9 @@ Documents'.format(example_topic_column_name))
 plot_imshow(threat_datasets['KDE']['df'], 'KDE')
 plt.title('Threat for each cell in Chicago by KDE model')
 
+plot_imshow(threat_datasets['KDE+LDA']['df'], 'logreg')
+plt.title('Threat for each cell in Chicago by KDE+LDA model')
+
 plot_imshow(threat_datasets['KDE+SENTIMENT']['df'], 'logreg')
 plt.title('Threat for each cell in Chicago by KDE+SENTIMENT model')
 
